@@ -34,11 +34,28 @@ const Signup = () => {
 
     const res = await register(payload);
     if (res.success) {
-      // Redirect based on role
       const role = res.user?.role || 'user';
-      if (role === 'admin') navigate('/dashboard/admin');
-      else if (role === 'therapist') navigate('/dashboard/therapist');
-      else navigate('/dashboard/user');
+      
+      // Handle therapist verification flow
+      if (role === 'therapist') {
+        // Check if therapist account is verified
+        if (res.user?.isVerified === false) {
+          // Clear form and logout the user before redirecting
+          setFormData({ name: '', email: '', password: '', role: 'user', specialization: '', licenseNumber: '', experience: '' });
+          
+          // Logout the user to prevent them from being logged in while unverified
+          await logout();
+          
+          // Redirect to pending verification page
+          navigate('/therapist-pending');
+          return;
+        }
+        navigate('/dashboard/therapist');
+      } else if (role === 'admin') {
+        navigate('/dashboard/admin');
+      } else {
+        navigate('/dashboard/user');
+      }
     }
   };
 

@@ -11,13 +11,14 @@ const UsersManagement = () => {
     status: 'all',
     search: '',
     page: 1,
-    limit: 20
+    limit: 15
   });
   const [actionLoading, setActionLoading] = useState(null);
 
   const fetchUsers = async () => {
     try {
       setLoading(true);
+      setError(null);
       const params = new URLSearchParams();
       
       Object.keys(filters).forEach(key => {
@@ -27,9 +28,8 @@ const UsersManagement = () => {
       });
 
       const res = await axios.get(`/api/admin/users?${params.toString()}`);
-      setUsers(res.data.data.users);
-      setPagination(res.data.data.pagination);
-      setError(null);
+      setUsers(res.data.data.users || []);
+      setPagination(res.data.data.pagination || {});
     } catch (err) {
       setError(err.response?.data?.message || 'Failed to fetch users');
       console.error('Fetch users error:', err);
@@ -46,8 +46,73 @@ const UsersManagement = () => {
     setFilters(prev => ({
       ...prev,
       [key]: value,
-      page: 1 // Reset to first page when filtering
+      page: 1
     }));
+  };
+
+  const handleUserAction = async (userId, action, reason = '') => {
+    try {
+      setActionLoading(userId);
+      setError(null);
+
+      const payload = { action };
+      if (reason) payload.reason = reason;
+
+      const res = await axios.put(`/api/admin/users/${userId}/action`, payload);
+      
+      if (res.data.success) {
+        // Update user in local state
+        setUsers(prev => prev.map(user => 
+          user._id === userId 
+            ? { ...user, status: action === 'ban' ? 'banned' : 'active' }
+            : user
+        ));
+      }
+    } catch (err) {
+      setError(err.response?.data?.message || `Failed to ${action} user`);
+      console.error(`${action} user error:`, err);
+    } finally {
+      setActionLoading(null);
+    }
+  };
+
+  const handleBanUser = (userId, userName) => {
+    const reason = prompt(`Reason for banning ${userName}:`);
+    if (reason !== null) {
+      handleUserAction(userId, 'ban', reason);
+    }
+  };
+
+  const handleUnbanUser = (userId) => {
+    if (window.confirm('Are you sure you want to unban this user?')) {
+      handleUserAction(userId, 'unban');
+    }
+  };
+
+  const formatDate = (dateString) => {
+    return new Date(dateString).toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric'
+    });
+  };
+
+  const getRoleColor = (role) => {
+    switch (role) {
+      case 'admin': return 'red';
+      case 'therapist': return 'green';
+      case 'user': return 'blue';
+      default: return 'gray';
+    }
+  };
+
+  const getStatusColor = (status) => {
+    switch (status) {
+      case 'active': return 'green';
+      case 'banned': return 'red';
+      case 'pending': return 'orange';
+      default: return 'gray';
+    }
   };
 
   const handlePageChange = (newPage) => {
@@ -57,164 +122,90 @@ const UsersManagement = () => {
     }));
   };
 
-  const handleBanUser = async (userId, userName) => {
-    const reason = prompt(`Enter reason for banning ${userName}:`);
-    if (!reason || reason.trim().length === 0) {
-      return;
-    }
-
-    if (!window.confirm(`Are you sure you want to ban ${userName}?`)) {
-      return;
-    }
-
-    try {
-      setActionLoading(userId);
-      await axios.put(`/api/admin/users/${userId}/ban`, { reason: reason.trim() });
-      
-      // Update user in local state
-      setUsers(prev => prev.map(user => 
-        user._id === userId 
-          ? { ...user, isBanned: true, banReason: reason.trim(), bannedAt: new Date() }
-          : user
-      ));
-      
-      alert(`${userName} has been banned successfully.`);
-    } catch (err) {
-      alert(err.response?.data?.message || 'Failed to ban user');
-      console.error('Ban user error:', err);
-    } finally {
-      setActionLoading(null);
-    }
-  };
-
-  const handleUnbanUser = async (userId, userName) => {
-    if (!window.confirm(`Are you sure you want to unban ${userName}?`)) {
-      return;
-    }
-
-    try {
-      setActionLoading(userId);
-      await axios.put(`/api/admin/users/${userId}/unban`);
-      
-      // Update user in local state
-      setUsers(prev => prev.map(user => 
-        user._id === userId 
-          ? { ...user, isBanned: false, banReason: undefined, bannedAt: undefined }
-          : user
-      ));
-      
-      alert(`${userName} has been unbanned successfully.`);
-    } catch (err) {
-      alert(err.response?.data?.message || 'Failed to unban user');
-      console.error('Unban user error:', err);
-    } finally {
-      setActionLoading(null);
-    }
-  };
-
-  const formatDate = (dateString) => {
-    return new Date(dateString).toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit'
-    });
-  };
-
-  const getRoleBadgeClass = (role) => {
-    switch (role) {
-      case 'admin': return 'badge--admin';
-      case 'therapist': return 'badge--therapist';
-      default: return 'badge--user';
-    }
-  };
-
-  if (loading && users.length === 0) {
+  if (loading) {
     return (
-      <div className="users-management">
-        <div style={{ textAlign: 'center', padding: '40px' }}>
-          Loading users...
+      <div className="admin-section">
+        <div className="loading-state">
+          <div className="loading-spinner">👥</div>
+          <p>Loading users...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="admin-section">
+        <div className="error-state">
+          <div className="error-icon">⚠️</div>
+          <h3>Failed to Load Users</h3>
+          <p>{error}</p>
+          <button className="btn btn--primary" onClick={fetchUsers}>
+            Retry
+          </button>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="users-management">
-      <div className="users-header">
+    <div className="admin-section">
+      <div className="admin-header">
         <h2>Users Management</h2>
-        <p>Manage user accounts, roles, and ban status</p>
+        <p>Manage platform users, roles, and permissions</p>
       </div>
 
       {/* Filters */}
-      <div className="card filters-card">
-        <div className="filters-form">
-          <div className="filter-group">
-            <label>Role</label>
-            <select 
-              value={filters.role} 
-              onChange={(e) => handleFilterChange('role', e.target.value)}
-            >
-              <option value="all">All Roles</option>
-              <option value="user">Users</option>
-              <option value="therapist">Therapists</option>
-              <option value="admin">Admins</option>
-            </select>
-          </div>
-
-          <div className="filter-group">
-            <label>Status</label>
-            <select 
-              value={filters.status} 
-              onChange={(e) => handleFilterChange('status', e.target.value)}
-            >
-              <option value="all">All Status</option>
-              <option value="active">Active</option>
-              <option value="banned">Banned</option>
-            </select>
-          </div>
-
-          <div className="filter-group">
-            <label>Search</label>
-            <input
-              type="text"
-              placeholder="Search by name or email..."
-              value={filters.search}
-              onChange={(e) => handleFilterChange('search', e.target.value)}
-            />
-          </div>
-
-          <div className="filter-group">
-            <label>Per Page</label>
-            <select 
-              value={filters.limit} 
-              onChange={(e) => handleFilterChange('limit', parseInt(e.target.value))}
-            >
-              <option value={10}>10</option>
-              <option value={20}>20</option>
-              <option value={50}>50</option>
-            </select>
-          </div>
+      <div className="users-filters">
+        <div className="filter-group">
+          <label>Role</label>
+          <select 
+            value={filters.role} 
+            onChange={(e) => handleFilterChange('role', e.target.value)}
+          >
+            <option value="all">All Roles</option>
+            <option value="user">Users</option>
+            <option value="therapist">Therapists</option>
+            <option value="admin">Admins</option>
+          </select>
         </div>
+
+        <div className="filter-group">
+          <label>Status</label>
+          <select 
+            value={filters.status} 
+            onChange={(e) => handleFilterChange('status', e.target.value)}
+          >
+            <option value="all">All Status</option>
+            <option value="active">Active</option>
+            <option value="banned">Banned</option>
+            <option value="pending">Pending</option>
+          </select>
+        </div>
+
+        <div className="filter-group">
+          <label>Search</label>
+          <input
+            type="text"
+            placeholder="Search by name or email..."
+            value={filters.search}
+            onChange={(e) => handleFilterChange('search', e.target.value)}
+          />
+        </div>
+
+        <button className="btn btn--light" onClick={fetchUsers}>
+          🔄 Refresh
+        </button>
       </div>
 
-      {error && (
-        <div className="alert alert--error">
-          {error}
-          <button 
-            className="btn btn--small btn--light" 
-            onClick={fetchUsers}
-            style={{ marginLeft: '12px' }}
-          >
-            Retry
-          </button>
-        </div>
-      )}
-
       {/* Users Table */}
-      <div className="card">
-        <div className="users-table-container">
+      <div className="users-table-container">
+        {users.length === 0 ? (
+          <div className="empty-state">
+            <h3>No users found</h3>
+            <p>Try adjusting your filters or check back later.</p>
+          </div>
+        ) : (
           <table className="users-table">
             <thead>
               <tr>
@@ -227,71 +218,42 @@ const UsersManagement = () => {
             </thead>
             <tbody>
               {users.map((user) => (
-                <tr key={user._id} className={user.isBanned ? 'user-banned' : ''}>
+                <tr key={user._id}>
                   <td>
                     <div className="user-info">
-                      <div className="user-details">
-                        <div className="user-name">{user.name}</div>
-                        <div className="user-email">{user.email}</div>
-                      </div>
+                      <div className="user-name">{user.name}</div>
+                      <div className="user-email">{user.email}</div>
                     </div>
                   </td>
                   <td>
-                    <span className={`badge ${getRoleBadgeClass(user.role)}`}>
+                    <span className={`badge badge--${getRoleColor(user.role)}`}>
                       {user.role}
                     </span>
                   </td>
                   <td>
-                    <div className="user-status">
-                      {user.isBanned ? (
-                        <div>
-                          <span className="status-badge status-banned">Banned</span>
-                          <div className="ban-info">
-                            <small>
-                              {user.bannedAt && `Banned: ${formatDate(user.bannedAt)}`}
-                            </small>
-                            {user.banReason && (
-                              <small className="ban-reason">
-                                Reason: {user.banReason}
-                              </small>
-                            )}
-                            {user.bannedBy && (
-                              <small>
-                                By: {user.bannedBy.name}
-                              </small>
-                            )}
-                          </div>
-                        </div>
-                      ) : (
-                        <span className="status-badge status-active">Active</span>
-                      )}
-                    </div>
-                  </td>
-                  <td>
-                    <span className="join-date">
-                      {formatDate(user.createdAt)}
+                    <span className={`badge badge--${getStatusColor(user.status || (user.isBanned ? 'banned' : 'active'))}`}>
+                      {user.status || (user.isBanned ? 'banned' : 'active')}
                     </span>
                   </td>
+                  <td>{formatDate(user.createdAt)}</td>
                   <td>
                     <div className="user-actions">
-                      {user.role !== 'admin' && (
-                        user.isBanned ? (
-                          <button
-                            className="btn btn--small btn--success"
-                            onClick={() => handleUnbanUser(user._id, user.name)}
-                            disabled={actionLoading === user._id}
-                          >
-                            {actionLoading === user._id ? 'Processing...' : 'Unban'}
-                          </button>
-                        ) : (
-                          <button
-                            className="btn btn--small btn--danger"
-                            onClick={() => handleBanUser(user._id, user.name)}
-                            disabled={actionLoading === user._id}
-                          >
-                            {actionLoading === user._id ? 'Processing...' : 'Ban'}
-                          </button>
-                        )
+                      {user.isBanned ? (
+                        <button
+                          className="btn btn--small btn--success"
+                          onClick={() => handleUnbanUser(user._id)}
+                          disabled={actionLoading === user._id}
+                        >
+                          {actionLoading === user._id ? 'Processing...' : 'Unban'}
+                        </button>
+                      ) : (
+                        <button
+                          className="btn btn--small btn--danger"
+                          onClick={() => handleBanUser(user._id, user.name)}
+                          disabled={actionLoading === user._id || user.role === 'admin'}
+                        >
+                          {actionLoading === user._id ? 'Processing...' : 'Ban'}
+                        </button>
                       )}
                     </div>
                   </td>
@@ -299,12 +261,6 @@ const UsersManagement = () => {
               ))}
             </tbody>
           </table>
-        </div>
-
-        {users.length === 0 && !loading && (
-          <div style={{ textAlign: 'center', padding: '40px', color: '#718096' }}>
-            No users found matching the current filters.
-          </div>
         )}
       </div>
 
@@ -314,20 +270,19 @@ const UsersManagement = () => {
           <button
             className="btn btn--light"
             onClick={() => handlePageChange(pagination.currentPage - 1)}
-            disabled={!pagination.hasPrev || loading}
+            disabled={!pagination.hasPrevPage}
           >
             Previous
           </button>
           
           <span className="pagination-info">
-            Page {pagination.currentPage} of {pagination.totalPages} 
-            ({pagination.totalUsers} total users)
+            Page {pagination.currentPage} of {pagination.totalPages}
           </span>
           
           <button
             className="btn btn--light"
             onClick={() => handlePageChange(pagination.currentPage + 1)}
-            disabled={!pagination.hasNext || loading}
+            disabled={!pagination.hasNextPage}
           >
             Next
           </button>

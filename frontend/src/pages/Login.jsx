@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext.jsx';
 
 const Login = () => {
-  const { login, error, clearError, loading, user } = useAuth();
+  const { login, logout, error, clearError, loading, user } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
+  const [successMessage, setSuccessMessage] = useState('');
 
   const [formData, setFormData] = useState({
     email: '',
@@ -19,6 +21,16 @@ const Login = () => {
   // Clear any previous auth error when landing on the login page
   useEffect(() => {
     if (error) clearError();
+    // Check for success message from navigation state
+    if (location.state?.message && location.state?.type === 'success') {
+      setSuccessMessage(location.state.message);
+      // Clear the message from navigation state
+      navigate(location.pathname, { replace: true });
+      // Auto-clear success message after 10 seconds
+      setTimeout(() => {
+        setSuccessMessage('');
+      }, 10000);
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -27,9 +39,21 @@ const Login = () => {
     const res = await login(formData);
     if (res.success) {
       const role = res.user?.role || user?.role || 'user';
-      if (role === 'admin') navigate('/dashboard/admin');
-      else if (role === 'therapist') navigate('/dashboard/therapist');
-      else navigate('/dashboard/user');
+      
+      // Handle therapist verification check
+      if (role === 'therapist') {
+        if (res.user?.isVerified === false) {
+          // Logout the user and redirect to pending page
+          await logout();
+          navigate('/therapist-pending');
+          return;
+        }
+        navigate('/dashboard/therapist');
+      } else if (role === 'admin') {
+        navigate('/dashboard/admin');
+      } else {
+        navigate('/dashboard/user');
+      }
     }
   };
 
@@ -75,6 +99,12 @@ const Login = () => {
               placeholder="Enter your password"
             />
           </div>
+
+          {successMessage && (
+            <div className="alert alert--success" style={{ marginBottom: '16px' }}>
+              {successMessage}
+            </div>
+          )}
 
           {error && <div className="alert alert--error">{error}</div>}
 

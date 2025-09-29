@@ -4,6 +4,7 @@ import Navbar from './components/Navbar.jsx';
 import Home from './pages/Home.jsx';
 import Login from './pages/Login.jsx';
 import Signup from './pages/Signup.jsx';
+import TherapistPending from './pages/TherapistPending.jsx';
 import Unauthorized from './pages/Unauthorized.jsx';
 import DashboardUser from './pages/DashboardUser.jsx';
 import DashboardTherapist from './pages/DashboardTherapist.jsx';
@@ -16,7 +17,7 @@ import ProtectedRoute from './components/ProtectedRoute.jsx';
 
 function App() {
   const location = useLocation();
-  const hideNavbar = ['/login', '/signup'].includes(location.pathname);
+  const hideNavbar = ['/login', '/signup', '/therapist-pending'].includes(location.pathname);
 
   return (
     <div>
@@ -25,6 +26,7 @@ function App() {
         <Route path="/" element={<Home />} />
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
+        <Route path="/therapist-pending" element={<TherapistPending />} />
         <Route path="/unauthorized" element={<Unauthorized />} />
 
         <Route
