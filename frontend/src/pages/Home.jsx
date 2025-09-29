@@ -4,6 +4,17 @@ import { Link } from 'react-router-dom';
 const Home = () => {
   return (
     <div>
+      {/* Floating Shapes for Landing Page */}
+      <div className="landing-floating-shapes">
+        <div className="landing-shape landing-shape-1"></div>
+        <div className="landing-shape landing-shape-2"></div>
+        <div className="landing-shape landing-shape-3"></div>
+        <div className="landing-shape landing-shape-4"></div>
+        <div className="landing-shape landing-shape-5"></div>
+        <div className="landing-shape landing-shape-6"></div>
+        <div className="landing-shape landing-shape-7"></div>
+      </div>
+      
       {/* Hero Section */}
       <section className="hero">
         <div className="hero__content container">
