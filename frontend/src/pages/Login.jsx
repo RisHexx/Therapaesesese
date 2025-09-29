@@ -34,43 +34,74 @@ const Login = () => {
   };
 
   return (
-    <div className="container">
-      <div className="card card--auth">
-        <h2>Login</h2>
-        <form onSubmit={onSubmit} className="form" style={{ marginTop: 16 }}>
-          <div className="form__group">
-            <label>Email</label>
-            <input
-              type="email"
-              name="email"
-              value={formData.email}
-              onChange={onChange}
-              required
-              placeholder="you@example.com"
-            />
+    <div className="auth-container">
+      {/* Visual Side */}
+      <div className="auth-visual">
+        <div className="auth-visual-content">
+          <h1>Welcome back to Therapease</h1>
+          <p>Continue your journey towards better mental wellness. Access your personalized dashboard and connect with your support network.</p>
+          
+          <div className="auth-features">
+            <div className="auth-feature">
+              <div className="auth-feature-icon">📊</div>
+              <span>Track your progress and mood patterns</span>
+            </div>
+            <div className="auth-feature">
+              <div className="auth-feature-icon">💬</div>
+              <span>Connect with verified therapists</span>
+            </div>
+            <div className="auth-feature">
+              <div className="auth-feature-icon">🔒</div>
+              <span>Your data is secure and private</span>
+            </div>
           </div>
-          <div className="form__group">
-            <label>Password</label>
-            <input
-              type="password"
-              name="password"
-              value={formData.password}
-              onChange={onChange}
-              required
-              placeholder="••••••••"
-            />
+        </div>
+      </div>
+
+      {/* Form Side */}
+      <div className="auth-content">
+        <div className="auth-card">
+          <div className="auth-header">
+            <h2>Sign in to your account</h2>
+            <p>Enter your credentials to access your dashboard</p>
           </div>
 
-          {error && <div className="alert alert--error">{error}</div>}
 
-          <button className="btn btn--primary" type="submit" disabled={loading}>
-            {loading ? 'Signing in...' : 'Login'}
-          </button>
-        </form>
+          <form onSubmit={onSubmit} className="form">
+            <div className="form__group">
+              <label>Email address</label>
+              <input
+                type="email"
+                name="email"
+                value={formData.email}
+                onChange={onChange}
+                required
+                placeholder="Enter your email"
+              />
+            </div>
+            <div className="form__group">
+              <label>Password</label>
+              <input
+                type="password"
+                name="password"
+                value={formData.password}
+                onChange={onChange}
+                required
+                placeholder="Enter your password"
+              />
+            </div>
 
-        <p style={{ marginTop: 16 }}>
-          Don't have an account? <Link to="/signup">Sign up</Link>
-        </p>
+            {error && <div className="alert alert--error">{error}</div>}
+
+            <button className="btn btn--primary" type="submit" disabled={loading} style={{ width: '100%', padding: '12px' }}>
+              {loading ? 'Signing in...' : 'Sign in'}
+            </button>
+          </form>
+
+          <div className="form-footer">
+            <p>Don't have an account? <Link to="/signup">Create one here</Link></p>
+          </div>
+        </div>
       </div>
     </div>
   );

@@ -9,6 +9,7 @@ const PostCard = ({ post, onPostUpdated, onPostDeleted }) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [flagged, setFlagged] = useState(false);
+  const [showAllReplies, setShowAllReplies] = useState(false);
 
   const formatDate = (dateString) => {
     const date = new Date(dateString);
@@ -145,9 +146,9 @@ const PostCard = ({ post, onPostUpdated, onPostDeleted }) => {
 
       {post.replies && post.replies.length > 0 && (
         <div className="replies-section">
-          <h4>Replies</h4>
+          <h4>Replies ({post.replies.length})</h4>
           <div className="replies-list">
-            {post.replies.map((reply) => (
+            {(showAllReplies ? post.replies : post.replies.slice(0, 2)).map((reply) => (
               <div key={reply._id} className="reply-card">
                 <div className="reply-header">
                   <div className="reply-author">
@@ -168,6 +169,20 @@ const PostCard = ({ post, onPostUpdated, onPostDeleted }) => {
               </div>
             ))}
           </div>
+          
+          {post.replies.length > 2 && (
+            <div className="replies-toggle">
+              <button
+                className="btn btn--small btn--light"
+                onClick={() => setShowAllReplies(!showAllReplies)}
+              >
+                {showAllReplies 
+                  ? `Show less` 
+                  : `Show ${post.replies.length - 2} more ${post.replies.length - 2 === 1 ? 'reply' : 'replies'}`
+                }
+              </button>
+            </div>
+          )}
         </div>
       )}
     </div>
