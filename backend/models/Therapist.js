@@ -243,12 +243,10 @@ therapistSchema.statics.getVerifiedTherapists = function(filters = {}, page = 1,
 
 // Static method to get pending therapist verifications (admin only)
 therapistSchema.statics.getPendingVerifications = function() {
-  // Get all unverified therapists (pending or any status where verified = false)
+  // Get only therapists with pending verification status
   return this.find({ 
-    $or: [
-      { verificationStatus: 'pending' },
-      { verified: false }
-    ]
+    verificationStatus: 'pending',
+    verified: false
   })
     .populate('userId', 'name email role createdAt')
     .sort({ createdAt: 1 });

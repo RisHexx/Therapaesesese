@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import TherapistVerification from '../components/TherapistVerification.jsx';
 
 const DashboardAdmin = () => {
   const [data, setData] = useState(null);
@@ -45,9 +44,6 @@ const DashboardAdmin = () => {
           </ul>
         </div>
       </div>
-
-      {/* Therapist Verification Section */}
-      <TherapistVerification />
     </div>
   );
 };

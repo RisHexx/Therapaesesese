@@ -1862,3 +1862,486 @@ textarea { resize: vertical; min-height: 80px; font-family: inherit; }
   .tab-button { padding: 8px 12px; }
   .tab-label { display: none; }
 }
+
+/* Therapist Dashboard Styles */
+.dashboard-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.dashboard-tabs {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 24px;
+  border-bottom: 2px solid var(--border);
+  padding-bottom: 8px;
+}
+
+.tab-button {
+  background: transparent;
+  border: none;
+  padding: 12px 20px;
+  border-radius: 8px 8px 0 0;
+  cursor: pointer;
+  font-weight: 500;
+  color: var(--muted);
+  transition: all 0.2s ease;
+  font-size: 14px;
+}
+
+.tab-button:hover {
+  background: var(--hover-bg);
+  color: var(--text);
+}
+
+.tab-button.active {
+  background: var(--primary);
+  color: white;
+  font-weight: 600;
+}
+
+.tab-content {
+  margin-top: 20px;
+}
+
+/* Therapist Messages Styles */
+.messages-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.message-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  transition: box-shadow 0.2s ease;
+}
+
+.message-card:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.message-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 16px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--border);
+}
+
+.patient-info h3 {
+  margin: 0 0 4px 0;
+  color: var(--text);
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.patient-email {
+  margin: 0 0 4px 0;
+  color: var(--muted);
+  font-size: 14px;
+}
+
+.message-date {
+  margin: 0;
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.message-status {
+  display: flex;
+  align-items: center;
+}
+
+.status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.message-content {
+  margin-bottom: 16px;
+}
+
+.message-content h4 {
+  margin: 0 0 8px 0;
+  color: var(--text);
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.message-text {
+  margin: 0;
+  color: var(--text);
+  line-height: 1.6;
+  padding: 12px;
+  background: var(--hover-bg);
+  border-radius: 8px;
+  border-left: 4px solid var(--primary);
+}
+
+.contact-info {
+  margin-bottom: 16px;
+  padding: 12px;
+  background: var(--hover-bg);
+  border-radius: 8px;
+}
+
+.contact-info h4 {
+  margin: 0 0 8px 0;
+  color: var(--text);
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.contact-details {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.contact-item {
+  display: flex;
+  gap: 8px;
+  font-size: 14px;
+}
+
+.contact-item strong {
+  min-width: 120px;
+  color: var(--text);
+}
+
+.contact-item a {
+  color: var(--primary);
+  text-decoration: none;
+}
+
+.contact-item a:hover {
+  text-decoration: underline;
+}
+
+.message-actions {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.responded-indicator {
+  color: var(--success);
+  font-size: 14px;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.empty-icon {
+  font-size: 48px;
+  margin-bottom: 16px;
+}
+
+/* Mobile responsiveness for messages */
+@media (max-width: 768px) {
+  .dashboard-container {
+    padding: 16px;
+  }
+  
+  .dashboard-tabs {
+    flex-direction: column;
+    gap: 4px;
+  }
+  
+  .tab-button {
+    text-align: left;
+    border-radius: 8px;
+  }
+  
+  .message-header {
+    flex-direction: column;
+    gap: 8px;
+    align-items: flex-start;
+  }
+  
+  .contact-details {
+    gap: 8px;
+  }
+  
+  .contact-item {
+    flex-direction: column;
+    gap: 2px;
+  }
+  
+  .contact-item strong {
+    min-width: auto;
+  }
+  
+  .message-actions {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
+
+/* Therapist Management Styles */
+.therapists-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+  gap: 20px;
+  margin-top: 20px;
+}
+
+.therapist-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  transition: box-shadow 0.2s ease, transform 0.2s ease;
+}
+
+.therapist-card:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  transform: translateY(-2px);
+}
+
+.therapist-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 16px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--border);
+}
+
+.therapist-info h3 {
+  margin: 0 0 4px 0;
+  color: var(--text);
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.therapist-email {
+  margin: 0 0 4px 0;
+  color: var(--muted);
+  font-size: 14px;
+}
+
+.therapist-joined {
+  margin: 0;
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.therapist-status {
+  display: flex;
+  align-items: center;
+}
+
+.status-badge.verified {
+  background: var(--success);
+  color: white;
+  padding: 4px 8px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.therapist-details {
+  margin-bottom: 16px;
+}
+
+.detail-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 8px;
+  font-size: 14px;
+}
+
+.detail-row strong {
+  color: var(--text);
+  min-width: 100px;
+  flex-shrink: 0;
+}
+
+.detail-row span {
+  color: var(--muted);
+  text-align: right;
+  flex: 1;
+  margin-left: 8px;
+}
+
+.therapist-actions {
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
+}
+
+/* Modal Styles */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 20px;
+}
+
+.modal-content {
+  background: var(--card);
+  border-radius: 12px;
+  max-width: 500px;
+  width: 100%;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 20px 0 20px;
+  margin-bottom: 20px;
+}
+
+.modal-header h3 {
+  margin: 0;
+  color: var(--text);
+  font-size: 20px;
+  font-weight: 600;
+}
+
+.modal-close {
+  background: none;
+  border: none;
+  font-size: 20px;
+  cursor: pointer;
+  color: var(--muted);
+  padding: 4px;
+  border-radius: 4px;
+  transition: background 0.2s ease;
+}
+
+.modal-close:hover {
+  background: var(--hover-bg);
+  color: var(--text);
+}
+
+.contact-form {
+  padding: 0 20px 20px 20px;
+}
+
+.form-group {
+  margin-bottom: 16px;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 4px;
+  font-weight: 500;
+  color: var(--text);
+  font-size: 14px;
+}
+
+.form-group input,
+.form-group textarea,
+.form-group select {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  font-size: 14px;
+  font-family: inherit;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.form-group input:focus,
+.form-group textarea:focus,
+.form-group select:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.1);
+}
+
+.form-group textarea {
+  resize: vertical;
+  min-height: 100px;
+}
+
+.form-group small {
+  display: block;
+  margin-top: 4px;
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+.form-actions {
+  display: flex;
+  gap: 12px;
+  justify-content: flex-end;
+  margin-top: 24px;
+  padding-top: 16px;
+  border-top: 1px solid var(--border);
+}
+
+/* Mobile responsiveness for therapist management */
+@media (max-width: 768px) {
+  .therapists-grid {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+  
+  .therapist-header {
+    flex-direction: column;
+    gap: 8px;
+    align-items: flex-start;
+  }
+  
+  .detail-row {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 2px;
+  }
+  
+  .detail-row span {
+    text-align: left;
+    margin-left: 0;
+  }
+  
+  .therapist-actions {
+    justify-content: flex-start;
+  }
+  
+  .modal-overlay {
+    padding: 10px;
+  }
+  
+  .form-row {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+  
+  .form-actions {
+    flex-direction: column;
+  }
+}

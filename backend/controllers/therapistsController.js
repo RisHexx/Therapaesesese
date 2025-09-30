@@ -322,6 +322,11 @@ const verifyTherapist = async (req, res) => {
     // Verify the therapist
     await therapist.verify(req.user.id, approved, rejectionReason);
 
+    // Update the User model's isVerified field to match therapist verification
+    await User.findByIdAndUpdate(therapist.userId._id, {
+      isVerified: approved
+    });
+
     res.status(200).json({
       success: true,
       message: `Therapist application ${approved ? 'approved' : 'rejected'} successfully`,
@@ -350,7 +355,8 @@ const getPendingVerifications = async (req, res) => {
 
     res.status(200).json({
       success: true,
-      data: pendingTherapists
+      data: pendingTherapists,
+      count: pendingTherapists.length
     });
   } catch (error) {
     console.error('Get pending verifications error:', error);

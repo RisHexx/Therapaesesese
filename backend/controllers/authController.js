@@ -1,5 +1,6 @@
 const { validationResult } = require('express-validator');
 const User = require('../models/User');
+const Therapist = require('../models/Therapist');
 const { sendTokenResponse } = require('../utils/jwt');
 
 // @desc    Register user
@@ -47,6 +48,8 @@ const register = async (req, res, next) => {
       userData.specialization = specialization;
       userData.licenseNumber = licenseNumber;
       userData.experience = experience;
+      // Set therapists as unverified by default
+      userData.isVerified = false;
     }
 
     // Add optional fields
@@ -55,6 +58,30 @@ const register = async (req, res, next) => {
 
     // Create user
     const user = await User.create(userData);
+
+    // Create therapist profile if user is a therapist
+    if (role === 'therapist') {
+      try {
+        const therapistProfile = await Therapist.create({
+          userId: user._id,
+          specialization: [specialization],
+          licenseNumber: licenseNumber,
+          experience: experience,
+          contactInfo: {
+            email: user.email,
+            phone: phone || '000-000-0000'
+          },
+          verified: false,
+          verificationStatus: 'pending',
+          isActive: true
+        });
+        console.log('Therapist profile created:', therapistProfile._id);
+      } catch (therapistError) {
+        console.error('Error creating therapist profile:', therapistError);
+        // Don't fail the registration if therapist profile creation fails
+        // The admin can create it manually later
+      }
+    }
 
     sendTokenResponse(user, 201, res);
   } catch (error) {

@@ -3,7 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext.jsx';
 
 const Signup = () => {
-  const { register, error, clearError, loading } = useAuth();
+  const { register, logout, error, clearError, loading } = useAuth();
   const navigate = useNavigate();
 
   const [formData, setFormData] = useState({

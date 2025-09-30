@@ -2,9 +2,9 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useAuth } from '../context/AuthContext.jsx';
 import UsersManagement from '../components/admin/UsersManagement.jsx';
-import FlaggedPostsManagement from '../components/admin/FlaggedPostsManagement.jsx';
 import AnalyticsDashboard from '../components/admin/AnalyticsDashboard.jsx';
 import TherapistVerification from '../components/TherapistVerification.jsx';
+import TherapistManagement from '../components/admin/TherapistManagement.jsx';
 
 const AdminDashboard = () => {
   const { user } = useAuth();
@@ -45,8 +45,8 @@ const AdminDashboard = () => {
   const tabs = [
     { id: 'analytics', label: 'Analytics', icon: '📊' },
     { id: 'users', label: 'Users', icon: '👥' },
-    { id: 'posts', label: 'Flagged Posts', icon: '🚩' },
-    { id: 'therapists', label: 'Therapist Verification', icon: '🏥' }
+    { id: 'therapists', label: 'Therapist Verification', icon: '🏥' },
+    { id: 'therapist-management', label: 'Contact Therapists', icon: '💬' }
   ];
 
   const renderTabContent = () => {
@@ -55,10 +55,10 @@ const AdminDashboard = () => {
         return <AnalyticsDashboard />;
       case 'users':
         return <UsersManagement />;
-      case 'posts':
-        return <FlaggedPostsManagement />;
       case 'therapists':
         return <TherapistVerification />;
+      case 'therapist-management':
+        return <TherapistManagement />;
       default:
         return <AnalyticsDashboard />;
     }

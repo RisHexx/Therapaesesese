@@ -30,8 +30,14 @@ const Navbar = () => {
         ) : (
           <>
             <Link to="/posts" className="btn btn--light">Posts</Link>
-            <Link to="/journals" className="btn btn--light">Journal</Link>
-            <Link to="/therapists" className="btn btn--light">Therapists</Link>
+            {/* Only show Journal for regular users */}
+            {user?.role === 'user' && (
+              <Link to="/journals" className="btn btn--light">Journal</Link>
+            )}
+            {/* Only show Therapists page for regular users */}
+            {user?.role === 'user' && (
+              <Link to="/therapists" className="btn btn--light">Therapists</Link>
+            )}
             {user?.role === 'admin' && (
               <Link to="/admin" className="btn btn--primary">Admin</Link>
             )}
